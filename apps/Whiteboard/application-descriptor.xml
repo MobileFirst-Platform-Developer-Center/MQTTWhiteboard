@@ -10,7 +10,8 @@
     INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR OPERATION OF THE SAMPLE SOURCE CODE.
     IBM HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS OR MODIFICATIONS TO THE SAMPLE SOURCE CODE.
 
---><application xmlns="http://www.worklight.com/application-descriptor" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Whiteboard" platformVersion="7.0.0.00.20150227-0916">
+-->
+<application xmlns="http://www.worklight.com/application-descriptor" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Whiteboard" platformVersion="7.1.0.00.20150731-2124">
 
 	<displayName>Whiteboard</displayName>
 	<description>Whiteboard</description>

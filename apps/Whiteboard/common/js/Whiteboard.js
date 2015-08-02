@@ -18,7 +18,7 @@ function WhiteboardApp() {
     this.drawOn = false;
     this.canvas = $("canvas")[0];
     
-    this.host = "< your MQTT broker >";
+    this.host = "127.0.0.1";
     this.port = 1883;
     // generate a 6-character
     // alphanumeric unique ID

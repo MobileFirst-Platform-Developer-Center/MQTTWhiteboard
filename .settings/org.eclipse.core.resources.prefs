@@ -1,22 +1,23 @@
-#Mon Mar 09 14:35:22 IST 2015
-base.iphone=3449151524
-base.android=961615611
-jsonstore.windowsphone8=98066318
-common.android=3951631686
-fipshttp.android=3456286054
+#Sun Aug 02 08:13:41 IDT 2015
+base.iphone=142350886
+base.android=2240194091
+jsonstore.windowsphone8=2564558338
+common.android=2602476710
+fipshttp.android=2225966711
 encoding//apps/Whiteboard/common/css/main.css=UTF-8
 Whiteboard.ipad.native=2545518115
-wl_version=7.0.0.00.20150227-0916
+wl_version=7.1.0.00
 Whiteboard.android.native=534001254
 eclipse.preferences.version=1
-base.windowsphone8=2414973466
+base.windowsphone8=1322081595
 jsonstore.android=2033967206
 analytics.ipad=2554529831
 encoding//apps/Whiteboard/common/index.html=UTF-8
 encoding//apps/Whiteboard/common/js/initOptions.js=UTF-8
-fipshttp.iphone=1503308747
-fipshttp.ipad=1503308747
+fipshttp.iphone=761882626
+fipshttp.ipad=761882626
 Whiteboard.iphone.native=2545518115
-base.ipad=3449151524
+wl_compatible_version=
+base.ipad=142350886
 analytics.iphone=2554529831
 analytics.android=963009885
