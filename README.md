@@ -1,28 +1,27 @@
-IBM MobileFirst Platform Foundation
-===
-### MQTT
+<!---Licensed Materials - Property of IBM
+5725-I43 (C) Copyright IBM Corp. 2015. All Rights Reserved.
+US Government Users Restricted Rights - Use, duplication or
+disclosure restricted by GSA ADP Schedule Contract with IBM Corp.-->
 
+# IBM MobileFirst Platform Foundation Cordova Template
+This template serves as a simple hello world application for MobileFirst Cordova
 
-### Usage
-Follow the instructions in the tutorial(s) listed below.
+Refer to the documentation links for more information.
 
-### Tutorials
-https://developer.ibm.com/mobilefirstplatform/documentation/integration-7-1/mq-telemetry-transport/
+## Installation
+- Method 1: Add the template to a MobileFirst Cordova app by using the
+  "cordova create" command.
 
-### Supported Levels
-IBM MobileFirst Platform Foundation 7.1
+Automatically add the plugin by creating a new Cordova project using the MobileFirst CLI create command:
 
-### License
-Copyright 2015 IBM Corp.
+            cordova create projectName --template cordova-template-mfp
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+## Supported Platforms
+- Android
+- iOS
 
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+## Documentation
+- [Overview](http://www-01.ibm.com/support/knowledgecenter/SSHS8R_7.1.0/com.ibm.worklight.dev.doc/dev/c_developing_hybrid_apps.html?lang=en)
+- [Developing Hybrid Application](http://www-01.ibm.com/support/knowledgecenter/SSHS8R_7.1.0/com.ibm.worklight.dev.doc/dev/c_init_wl_framework_hybrid_app.html?lang=en)
+- [API](http://www-01.ibm.com/support/knowledgecenter/SSHS8R_7.1.0/com.ibm.worklight.apiref.doc/topics/r_apiref.html?lang=en)
+- [MobileFirst CLI Commands](http://www-01.ibm.com/support/knowledgecenter/SSHS8R_7.1.0/com.ibm.worklight.dev.doc/dev/r_wl_cli_list_of_commands.html)
