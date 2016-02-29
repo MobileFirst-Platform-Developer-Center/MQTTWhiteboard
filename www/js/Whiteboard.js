@@ -1,138 +1,238 @@
 /**
-* Copyright 2015 IBM Corp.
-* 
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License. 
-*/
+ * Copyright 2016 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+function WhiteBoard(config) {
+    if (typeof config === 'undefined') {
+        throw {message: "Configuration is required"};
+    } else if (typeof config.host === 'undefined') {
+        throw {message: "Host is required"};
+    } else if (typeof  config.port === 'undefined') {
+        throw {message: "Port is required"};
+    } else if (typeof config.container === 'undefined' || !(config.container instanceof HTMLElement)) {
+        throw {message: 'canvas container element is required'}
+    }
 
-var Colors = ["rgb(255,0,0)", "rgb(0,170,0)", "rgb(0,0,255)", "rgb(0,0,0)",
-              "rgb(230,230,0)", "rgb(127,255,212)", "rgb(139,69,19)"];
+    this.canvases = {};
 
-function WhiteboardApp() {
-    this.size = 8;
-    this.color = Colors[Math.floor(Math.random() * Colors.length)];
-    this.drawOn = false;
-    this.canvas = $("canvas")[0];
-    
-    this.host = "127.0.0.1";
-    this.port = 1883;
-    // generate a 6-character
-    // alphanumeric unique ID
-    this.uuid = Math.random().toString(36)
-                    .slice(2).substring(0, 6);
-    this.clientId = "whiteboard-"+this.uuid;
-    this.client = new Messaging.Client(this.host, this.port, this.clientId);
+    var id = this.random();
+    this.uuid = this.canvasUUID(id);
+
+    this.client = new Messaging.Client(config.host, config.port, this.uuid);
+
+    this.container = config.container;
+
+    var canvasElement = document.createElement('canvas');
+    canvasElement.id = this.uuid;
+    canvasElement.width = this.container.scrollWidth;
+    canvasElement.height = this.container.scrollHeight;
+
+
+    this.container.appendChild(canvasElement);
+
+    var self = this;
+
+    var canvas = new Canvas(canvasElement, {
+        color: '#' + id,
+        width: 10
+    });
+
+    this.canvases[this.uuid] = canvas;
+
+    canvasElement.addEventListener('touchstart', function (e) {
+        canvas.end();
+
+        var touch = e.touches[0];
+
+        var x = touch.pageX;
+        var y = touch.pageY - touch.target.offsetParent.offsetTop;
+
+
+        self.draw(x, y, canvas, true);
+    }, false);
+
+    canvasElement.addEventListener('touchend', function () {
+        canvas.end();
+
+        var color = canvas.stroke.color;
+
+        self.broadcastEvent({
+            type: 'end-draw',
+            canvas: {
+                color: color,
+                id: self.canvasUUID(color.substring(1))
+            }
+        });
+
+    }, false);
+
+    canvasElement.addEventListener('touchmove', function (e) {
+        if (canvas.started) {
+            var touch = e.touches[0];
+
+            var x = touch.pageX;
+            var y = touch.pageY - touch.target.offsetParent.offsetTop;
+
+            self.draw(x, y, canvas, true);
+        }
+    }, false);
+
+    // Disable Page Move
+    document.body.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+    }, false);
+
+
 }
 
-WhiteboardApp.prototype.connect = function() {
-    this.client.onMessageArrived = (function(self) {
-    	return function(msg) {
-    		self.onMsg(msg);
-    	}
-    })(this);
-    this.client.onConnectionLost = function() {
-        alert("Connection lost!");
-    };
+WhiteBoard.prototype.canvasUUID = function(id) {
+    return 'c-' + id;
+};
 
-    var connectOptions = new Object();
-    connectOptions.keepAliveInterval = 3600;
-    connectOptions.onSuccess = (function(self) {
-    	return function() {
-    		self.onConn();
-    	}
+WhiteBoard.prototype.random = function () {
+    var color = parseInt(Math.random() * 0xFFFFFF);
+
+    return color.toString(16);
+};
+
+WhiteBoard.prototype.connect = function () {
+
+    this.client.onMessageArrived = (function (self) {
+        return function (message) {
+            self.onMessage(message);
+        };
     })(this);
-    connectOptions.onFailure = function() {
-        alert("Failed to connect!");
-    };
+
+    this.client.onConnectionLost = (function (self) {
+        return self.onConnectionLost;
+    })(this);
+
+    var connectOptions = {};
+    connectOptions.keepAliveInterval = 3600;
+    connectOptions.onSuccess = (function (self) {
+        return function () {
+            self.onConnect();
+        };
+    })(this);
+    connectOptions.onFailure = (function (self) {
+        return self.onFailure;
+    })(this);
 
     this.client.connect(connectOptions);
-}
+};
 
-WhiteboardApp.prototype.onMsg = function(msg) {
-	var topic = msg.destinationName;
-    var payload = msg.payloadString;
+WhiteBoard.prototype.onConnect = function () {
+    this.client.subscribe('whiteboard/+');
+};
+
+WhiteBoard.prototype.onFailure = function () {
+    alert('Failed to connect!');
+};
+
+WhiteBoard.prototype.onConnectionLost = function () {
+    alert('Connection lost!');
+};
+
+WhiteBoard.prototype.onMessage = function (message) {
+    var topic = message.destinationName;
+    var payload = message.payloadString;
     if (topic.indexOf("whiteboard/") == 0) {
         var sourceUUID = topic.split("/")[1];
         // don't process own actions
-        if (sourceUUID == this.uuid) { return; } 
-        var data = JSON.parse(payload);
-        if (data.type == "draw") {
-            this.draw(data.x, data.y, this.size, data.color, true);
-        } else if (data.type == "clear") {
-            this.clear(true);
+        if (sourceUUID == this.uuid) {
+            return;
+        }
+
+        try {
+            var data = JSON.parse(payload);
+
+            if (data.type == "clear") {
+                return this.clear(false);
+            }
+
+            var canvasElement = document.querySelector('#' + data.canvas.id);
+
+            if (!canvasElement) {
+                canvasElement = document.createElement('canvas');
+                canvasElement.id = data.canvas.id;
+                canvasElement.width = this.container.scrollWidth;
+                canvasElement.height = this.container.scrollHeight;
+
+
+                this.container.appendChild(canvasElement);
+
+                this.canvases[data.canvas.id] = new Canvas(canvasElement, {
+                    color: data.canvas.color,
+                    width: 10
+                });
+            }
+
+            var canvas = this.canvases[data.canvas.id];
+
+            if (data.type == "draw") {
+                this.draw(data.position[0], data.position[1], canvas, false);
+            } else if (data.type == "end-draw") {
+                canvas.end();
+            }
+
+        } catch (e) {
+            console.error(e);
         }
     }
-}
+};
 
-WhiteboardApp.prototype.onConn = function() {
-	this.client.subscribe("whiteboard/+");
-}
+WhiteBoard.prototype.draw = function (x, y, canvas, publish) {
+    canvas.move(x, y);
 
-WhiteboardApp.prototype.draw = function(x, y, size, color, fromOutside) {
-    var context = this.canvas.getContext("2d");
-    for (var i = 1; i <= size; i+=2) {
-        context.save();
-        context.beginPath();
-        var alpha = 1.0 - Math.pow(i/size, 2);
-        context.globalAlpha = alpha;
-        context.strokeStyle = color;
-        context.arc(x, y, i, 0, 2*Math.PI);
-        context.stroke();
-        context.restore();
+    if (publish) {
+        var color = canvas.stroke.color;
+        this.broadcastEvent({
+            type: 'draw',
+            position: [x, y],
+            canvas: {
+                color: color,
+                id: this.canvasUUID(color.substring(1))
+            }
+        });
     }
-    
-    if (!fromOutside) {
-    	this.publishDraw(x, y, color);
+};
+
+WhiteBoard.prototype.clear = function (broadcast) {
+
+    for (var key in this.canvases) {
+        var canvas = this.canvases[key];
+        canvas.clear();
     }
-}
 
-WhiteboardApp.prototype.clear = function(fromOutside) {
-    var context = this.canvas.getContext("2d");
-    context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    
-    if (!fromOutside) {
-    	this.publishClear();
+    if (broadcast) {
+        this.broadcastEvent({
+            type: 'clear'
+        });
     }
-}
+};
 
-WhiteboardApp.prototype.publishDraw = function(x, y, color) {
+WhiteBoard.prototype.broadcastEvent = function (event) {
+    var topic = 'whiteboard/' + this.uuid;
 
-    var topic = "whiteboard/" + this.uuid;
-    var data = JSON.stringify({
-        type: "draw",
-        x: x,
-        y: y,
-        color: color,
-    });
+    if (typeof event.type === 'undefined') {
+        throw {message: 'event type is required'};
+    }
 
-    var msg = new Messaging.Message(data);
-    msg.destinationName = topic;
-    msg.qos = 0;
-    msg.retained = false;
+    var message = new Messaging.Message(JSON.stringify(event));
+    message.destinationName = topic;
+    message.qos = 0;
+    message.retained = false;
 
-    this.client.send(msg);
-}
-
-WhiteboardApp.prototype.publishClear = function() {
-    
-	var topic = "whiteboard/" + this.uuid;
-    var data = JSON.stringify({
-        type: "clear"
-    });
-
-    var msg = new Messaging.Message(data);
-    msg.destinationName = topic;
-    msg.qos = 0;
-    msg.retained = false;
-
-    this.client.send(msg);
-}
+    this.client.send(message);
+};
