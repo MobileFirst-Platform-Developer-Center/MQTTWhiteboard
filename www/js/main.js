@@ -37,18 +37,53 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     onDeviceReady: function() {
 
+        var canvasContainer = document.querySelector('#canvas-container');
+
         // TODO: update connection details, HOST and PORT
         var wb = new WhiteBoard({
             host: 'YOUR_MQ_SERVER_HOST',
             port: 61623,
-            container: document.querySelector('#canvas-container')
+            container: canvasContainer
         });
 
         wb.connect();
 
+        var canvas = wb.getCanvasElement();
+
+        canvas.addEventListener('touchstart', function (e) {
+            var touch = e.touches[0];
+
+            var x = touch.pageX;
+            var y = touch.pageY - touch.target.offsetParent.offsetTop;
+
+
+            wb.draw(x, y);
+        }, false);
+
+        canvas.addEventListener('touchend', function () {
+            wb.stop();
+        }, false);
+
+        canvas.addEventListener('touchmove', function (e) {
+            var touch = e.touches[0];
+
+            var y = touch.pageY - touch.target.offsetParent.offsetTop;
+
+            wb.draw(touch.pageX, y);
+        }, false);
+
+        window.addEventListener('resize', function(){
+            wb.resize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+        });
+
+        // Disable Page Move
+        document.body.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+        }, false);
+
         document.querySelector("#eraser").addEventListener('click', function(){
-            wb.clear(true);
-        })
+            wb.clear();
+        });
     }
 };
 
