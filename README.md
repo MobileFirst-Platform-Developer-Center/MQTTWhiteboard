@@ -8,14 +8,7 @@ https://mobilefirstplatform.ibmcloud.com/tutorials/en/product-integration/8.0/mq
 
 ### Usage
 
-1. Update the MQ server endpoint and port in `main.js`
-```
-var wb = new WhiteBoard({
-    host: 'YOUR_MQ_SERVER_HOST.COM',
-    port: 61623,
-    container: canvasContainer
-});
-```
+1. Update the MQ server **endpoint** and **port** in `main.js`
 2. From the command-line, navigate to the project's root folder.
 2. Add a platform by running the `cordova platform add` command.
 3. Run the Cordova application by running the `cordova run` command.
