@@ -9,9 +9,12 @@ https://mobilefirstplatform.ibmcloud.com/tutorials/en/product-integration/8.0/mq
 ### Usage
 
 1. Update the MQ server **endpoint** and **port** in `main.js`
-2. From the command-line, navigate to the project's root folder.
-2. Add a platform by running the `cordova platform add` command.
-3. Run the Cordova application by running the `cordova run` command.
+2. Update the Content Security Policy (CSP) in `index.html` to include your MQ server, for example:
+
+    ```<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com ws://YOUR_MQ_SERVER_HOST:PORT 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">```
+3. From the command-line, navigate to the project's root folder.
+4. Add a platform by running the `cordova platform add` command.
+5. Run the Cordova application by running the `cordova run` command.
 
 ### Supported Levels
 IBM MobileFirst Platform Foundation 8.0
