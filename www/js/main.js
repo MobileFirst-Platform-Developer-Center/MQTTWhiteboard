@@ -18,24 +18,29 @@ var Messages = {};
 var wlInitOptions = {};
 
 // Called automatically after MFP framework initialization by WL.Client.init(wlInitOptions).
-function wlCommonInit(){
+function wlCommonInit() {
     //MFP APIs should only be called within wlCommonInit() or after it has been called, to ensure that the APIs have loaded properly
 }
 
 var app = {
     // Application Constructor
-    initialize: function() {
+    initialize: function () {
         this.bindEvents();
     },
 
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
+    bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
 
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    onDeviceReady: function() {
+    onDeviceReady: function () {
+
+        // Disable Page Move
+        document.body.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+        }, false);
 
         var canvasContainer = document.querySelector('#canvas-container');
 
@@ -72,16 +77,11 @@ var app = {
             wb.draw(touch.pageX, y);
         }, false);
 
-        window.addEventListener('resize', function(){
+        window.addEventListener('resize', function () {
             wb.resize(canvasContainer.clientWidth, canvasContainer.clientHeight);
         });
 
-        // Disable Page Move
-        document.body.addEventListener('touchmove', function (e) {
-            e.preventDefault();
-        }, false);
-
-        document.querySelector("#eraser").addEventListener('click', function(){
+        document.querySelector("#eraser").addEventListener('click', function () {
             wb.clear();
         });
     }
