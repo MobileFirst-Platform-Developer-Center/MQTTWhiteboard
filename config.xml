@@ -90,7 +90,7 @@
         <splash height="360" src="res/screen/windows/Wide310x150Logo.scale-240.png" width="744" />
     </platform>
     <mfp:android>
-        <mfp:sdkChecksum>741168166</mfp:sdkChecksum>
+        <mfp:sdkChecksum>0</mfp:sdkChecksum>
         <mfp:appChecksum>0</mfp:appChecksum>
         <mfp:security>
             <mfp:testWebResourcesChecksum enabled="false" ignoreFileExtensions="png, jpg, jpeg, gif, mp4, mp3" />
@@ -124,7 +124,7 @@
         </mfp:windows10>
         <mfp:appChecksum>0</mfp:appChecksum>
     </mfp:windows>
-    <mfp:platformVersion>8.0.0.00-20160224-2339</mfp:platformVersion>
+    <mfp:platformVersion>8.0.0.00-20160322-1233</mfp:platformVersion>
     <mfp:clientCustomInit enabled="false" />
     <mfp:server runtime="mfp" url="http://localhost:9080" />
     <mfp:directUpdateAuthenticityPublicKey />
