@@ -55,7 +55,7 @@
         } else if (typeof  config.port === 'undefined') {
             throw {message: "Port is required"};
         } else if (typeof config.container === 'undefined' || !(config.container instanceof HTMLElement)) {
-            throw {message: 'canvas container element is required'}
+            throw {message: 'canvas container element is required'};
         }
 
         var color = randomColor();
@@ -133,17 +133,17 @@
     };
 
     WhiteBoard.prototype.onFailure = function () {
-        alert('Failed to connect!');
+        navigator.notification.alert('Failed to connect!');
     };
 
     WhiteBoard.prototype.onConnectionLost = function () {
-        alert('Connection lost!');
+        navigator.notification.alert('Connection lost!');
     };
 
     WhiteBoard.prototype.onMessage = function (message) {
         var topic = message.destinationName;
         var payload = message.payloadString;
-        if (topic.indexOf("whiteboard/") == 0) {
+        if (topic.indexOf("whiteboard/") === 0) {
             var sourceUUID = topic.split("/")[1];
             // don't process own actions
             if (sourceUUID == this.uuid) {
